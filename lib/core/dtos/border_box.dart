@@ -1,4 +1,4 @@
-import '../base/elegant_box.dart';
+import '../base/e_log_box.dart';
 
 final class BorderBox {
   final String boxTopLeftBorder;
@@ -9,11 +9,11 @@ final class BorderBox {
   final String boxBottomRightBorder;
 
   const BorderBox({
-    this.boxTopLeftBorder = ElegantBox.topLeftArc,
-    this.boxTopRightBorder = ElegantBox.topRightArc,
-    this.boxBottomLeftBorder = ElegantBox.bottomLeftArc,
-    this.boxBottomRightBorder = ElegantBox.bottomRightArc,
-    this.boxMiddleLeft = ElegantBox.middleLeft,
-    this.boxMiddleRight = ElegantBox.middleRight,
+    this.boxTopLeftBorder = ELogBox.topLeftArc,
+    this.boxTopRightBorder = ELogBox.topRightArc,
+    this.boxBottomLeftBorder = ELogBox.bottomLeftArc,
+    this.boxBottomRightBorder = ELogBox.bottomRightArc,
+    this.boxMiddleLeft = ELogBox.middleLeft,
+    this.boxMiddleRight = ELogBox.middleRight,
   });
 }

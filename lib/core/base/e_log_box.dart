@@ -11,7 +11,7 @@
 // │ └──┴──┘           │▒
 // └───────────────────┘▒
 //  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-class ElegantBox {
+class ELogBox {
   //Rect simple
   static const topLeft = '┌';
   static const topRight = '┐';

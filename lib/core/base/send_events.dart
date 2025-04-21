@@ -1,7 +1,5 @@
 import 'package:win32/win32.dart';
 
-import 'keys.dart';
-
 class SendEvents {
   void click(int hwnd, {int x = 0, int y = 0, int time = 100}) {
     // Verifica se o hwnd é válido
@@ -135,35 +133,6 @@ class SendEvents {
     Sleep(time);
   }
 
-  void hidePressed(int hwnd, {int time = 100}) {
-    // Verifica se o handle da janela (hwnd) é válido
-    if (hwnd == 0) {
-      throw ArgumentError('Handle da janela inválido.');
-    }
-
-    PostMessage(hwnd, WM_KEYDOWN, Keys.f12, 0x00000001);
-
-    Sleep(time);
-
-    PostMessage(hwnd, WM_KEYDOWN, Keys.f12, 0x00000001);
-
-    Sleep(time);
-
-    PostMessage(hwnd, WM_KEYDOWN, Keys.enter, 0x00000001);
-
-    Sleep(time);
-
-    PostMessage(hwnd, WM_KEYUP, Keys.enter, 0xC0000001);
-
-    Sleep(time);
-
-    PostMessage(hwnd, WM_KEYUP, Keys.f12, 0xC0000001);
-
-    PostMessage(hwnd, WM_KEYDOWN, Keys.enter, 0x00000001);
-
-    Sleep(time);
-  }
-
   void word(int hwnd, String word, {int time = 100}) {
     for (var char in word.split('')) {
       int vk = VkKeyScan(char.codeUnits[0]) & 0xFF;
@@ -184,12 +153,6 @@ class SendEvents {
     for (var char in filteredWord.split('')) {
       int vk = VkKeyScan(char.codeUnits[0]) & 0xFF;
       keyPressed(hwnd, vk, time: time);
-    }
-  }
-
-  void eraseText(int hwnd, int count) {
-    for (var i = 0; i < count; i++) {
-      keyPressed(hwnd, Keys.backspace);
     }
   }
 }

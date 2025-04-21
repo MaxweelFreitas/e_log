@@ -1,16 +1,16 @@
 import '../../core/base/e_log.dart';
-import '../../core/base/elegant_box.dart';
-import '../../core/dtos/log_level.dart';
+import '../../core/base/e_log_box.dart';
 import '../../core/base/x_term/x_term_color.dart';
 import '../../core/base/x_term/x_term_style.dart';
+import '../../core/dtos/log_level.dart';
 
 enum LevelAlignment { left, middle, right }
 
 class DrawFunctions {
   static String drawTop({
     String borderColor = XTermColor.white,
-    String boxTopLeftBorder = ElegantBox.topLeftArc,
-    String boxTopRightBorder = ElegantBox.topRightArc,
+    String boxTopLeftBorder = ELogBox.topLeftArc,
+    String boxTopRightBorder = ELogBox.topRightArc,
     LogLevel logLevel = const LogLevel(),
     LevelAlignment levelAlignment = LevelAlignment.middle,
     int lineLength = 75,
@@ -75,17 +75,17 @@ class DrawFunctions {
       {int lineLength = 75, bool isDashed = false}) {
     late final String lineType;
     if (!isDashed) {
-      lineType = ElegantBox.line;
+      lineType = ELogBox.line;
     } else {
-      lineType = ElegantBox.dashedRight;
+      lineType = ELogBox.dashedRight;
     }
     return List.filled(lineLength - 2, lineType).join();
   }
 
   static String drawMedium({
     String borderColor = XTermColor.white,
-    String boxMiddleRight = ElegantBox.middleRight,
-    String boxMiddleLeft = ElegantBox.middleLeft,
+    String boxMiddleRight = ELogBox.middleRight,
+    String boxMiddleLeft = ELogBox.middleLeft,
     int lineLength = 75,
     bool isDashed = false,
   }) {
@@ -101,8 +101,8 @@ class DrawFunctions {
 
   static String drawBottom({
     String borderColor = XTermColor.white,
-    String boxBottomLeftBorder = ElegantBox.bottomLeftArc,
-    String boxBottomRightBorder = ElegantBox.bottomRightArc,
+    String boxBottomLeftBorder = ELogBox.bottomLeftArc,
+    String boxBottomRightBorder = ELogBox.bottomRightArc,
     int lineLength = 75,
   }) {
     //Example

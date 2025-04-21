@@ -1,4 +1,4 @@
-import '../base/elegant_box.dart';
+import '../base/e_log_box.dart';
 import '../base/x_term/x_term_color.dart';
 
 /// ## Default [LogLevel] printed.
@@ -26,11 +26,11 @@ final class LogLevel {
   final String sufix;
 
   const LogLevel({
-    this.prefix = ElegantBox.middleRight,
+    this.prefix = ELogBox.middleRight,
     this.icon = '',
     this.nameBgColor = XTermColor.reset,
     this.nameColor = XTermColor.white,
     this.name = '',
-    this.sufix = ElegantBox.middleLeft,
+    this.sufix = ELogBox.middleLeft,
   });
 }
