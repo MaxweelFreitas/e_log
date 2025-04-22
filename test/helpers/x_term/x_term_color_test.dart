@@ -1,9 +1,10 @@
+import 'package:e_log/core/base/e_log.dart';
 import 'package:e_log/core/base/x_term/x_term_color.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('Colors', () {
-    print(XTermColor.printColors());
+    eLog(XTermColor.printColors());
   });
   test(
       '${XTermColor.rgbFg(237, 142, 137)}█${XTermColor.rgbFg(247, 182, 133)}█${XTermColor.rgbFg(243, 235, 165)}█${XTermColor.rgbFg(148, 198, 145)}█${XTermColor.rgbFg(155, 214, 217)}█${XTermColor.rgbFg(180, 168, 224)}█${XTermColor.reset}${XTermColor.reset}   ⇒ Should return a RGB foreground color [53,55,89] ⇒ \x1B[38;2;53;55;89m██',

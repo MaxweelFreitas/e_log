@@ -1,5 +1,4 @@
 import '../../core/base/e_log.dart';
-import '../../core/base/e_log_box.dart';
 import '../../core/base/x_term/x_term_color.dart';
 import '../../core/base/x_term/x_term_style.dart';
 import '../../core/dtos/log_level.dart';
@@ -9,8 +8,8 @@ enum LevelAlignment { left, middle, right }
 class DrawFunctions {
   static String drawTop({
     String borderColor = XTermColor.white,
-    String boxTopLeftBorder = ELogBox.topLeftArc,
-    String boxTopRightBorder = ELogBox.topRightArc,
+    String boxTopLeftBorder = '╭',
+    String boxTopRightBorder = '╮',
     LogLevel logLevel = const LogLevel(),
     LevelAlignment levelAlignment = LevelAlignment.middle,
     int lineLength = 75,
@@ -75,17 +74,17 @@ class DrawFunctions {
       {int lineLength = 75, bool isDashed = false}) {
     late final String lineType;
     if (!isDashed) {
-      lineType = ELogBox.line;
+      lineType = '─';
     } else {
-      lineType = ELogBox.dashedRight;
+      lineType = '╶';
     }
     return List.filled(lineLength - 2, lineType).join();
   }
 
   static String drawMedium({
     String borderColor = XTermColor.white,
-    String boxMiddleRight = ELogBox.middleRight,
-    String boxMiddleLeft = ELogBox.middleLeft,
+    String boxMiddleRight = '┤',
+    String boxMiddleLeft = '├',
     int lineLength = 75,
     bool isDashed = false,
   }) {
@@ -101,8 +100,8 @@ class DrawFunctions {
 
   static String drawBottom({
     String borderColor = XTermColor.white,
-    String boxBottomLeftBorder = ELogBox.bottomLeftArc,
-    String boxBottomRightBorder = ELogBox.bottomRightArc,
+    String boxBottomLeftBorder = '╰',
+    String boxBottomRightBorder = '╯',
     int lineLength = 75,
   }) {
     //Example

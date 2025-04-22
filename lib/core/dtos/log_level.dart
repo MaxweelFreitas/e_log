@@ -1,4 +1,3 @@
-import '../base/e_log_box.dart';
 import '../base/x_term/x_term_color.dart';
 
 /// ## Default [LogLevel] printed.
@@ -26,11 +25,11 @@ final class LogLevel {
   final String sufix;
 
   const LogLevel({
-    this.prefix = ELogBox.middleRight,
+    this.prefix = '┤',
     this.icon = '',
     this.nameBgColor = XTermColor.reset,
     this.nameColor = XTermColor.white,
     this.name = '',
-    this.sufix = ELogBox.middleLeft,
+    this.sufix = '├',
   });
 }

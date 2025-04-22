@@ -100,8 +100,7 @@ class Mem {
   /// ```
   int openProcessHandle(int processId) {
     return openProcess(
-      PROCESS_ACCESS_RIGHTS.PROCESS_VM_READ |
-          PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_INFORMATION,
+      PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
       0,
       processId,
     );
