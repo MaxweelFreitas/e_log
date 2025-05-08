@@ -1,4 +1,5 @@
 import 'e_log_box.dart';
+import 'x_term/x_term_color.dart';
 
 enum EBoxShadow {
   none,
@@ -12,7 +13,6 @@ class EBoxBuilder {
   final String title;
   final List<String> content;
   final int? width;
-  final bool shadow;
   final EBoxShadow shadowLevel;
 
   EBoxBuilder({
@@ -20,8 +20,7 @@ class EBoxBuilder {
     required this.title,
     required this.content,
     this.width,
-    this.shadow = false,
-    this.shadowLevel = EBoxShadow.light,
+    this.shadowLevel = EBoxShadow.none,
   });
 
   String get _shadowChar => switch (shadowLevel) {
@@ -53,16 +52,20 @@ class EBoxBuilder {
     for (final line in content) {
       final lineContent =
           '${style.vertical} ${line.padRight(maxWidth - 2)} ${style.vertical}';
-      buffer.writeln(shadow ? '$lineContent$_shadowChar' : lineContent);
+      buffer.writeln(shadowLevel != EBoxShadow.none
+          ? '$lineContent$_shadowChar'
+          : lineContent);
     }
 
     // Bottom line
     final bottomLine =
         '${style.bottomLeft}${style.horizontal * maxWidth}${style.bottomRight}';
-    buffer.writeln(shadow ? '$bottomLine$_shadowChar' : bottomLine);
+    buffer.writeln(shadowLevel != EBoxShadow.none
+        ? '$bottomLine$_shadowChar'
+        : bottomLine);
 
     // Sombra inferior
-    if (shadow) {
+    if (shadowLevel != EBoxShadow.none) {
       final shadowLine = '  ${_shadowChar * (maxWidth + 1)}';
       buffer.writeln(shadowLine);
     }
@@ -83,12 +86,13 @@ void main() {
         'Borders adjust dynamically.',
       ],
     ),
+    //TODO: Tratar scape caracters para evitar erro de formatação da caixa
     EBoxBuilder(
       width: 60,
       style: EBoxStyle.double,
       title: 'Double Box',
       content: [
-        'This is a double-lined box.',
+        '${XTermColor.hexFg('#CCCCCC')}This is a double-lined box.${XTermColor.reset}',
         'More elegant and professional.',
       ],
     ),
@@ -145,7 +149,7 @@ void main() {
         'This box has a drop shadow!',
         'Looks more 3D, doesn\'t it?',
       ],
-      shadow: true,
+      shadowLevel: EBoxShadow.light,
     ),
   ];
 
