@@ -1,4 +1,7 @@
+library;
+// ignore_for_file: unintended_html_in_doc_comment
 ///## XTermColor
+///### Autor: Maxweel Freitas
 ///
 ///
 /// ```dart
@@ -7,16 +10,20 @@
 /// The class provides a comprehensive set of named colors in the xterm-256color
 /// palette and utility methods to convert RGB and HEX colors into ANSI escape
 /// sequences for coloring text in terminals.
-library;
-// ignore_for_file: unintended_html_in_doc_comment
+///
+/// ### Usage
+/// This is a sample how to use the class:
+///
+/// ```dart
+/// print('${XTermColor.main}Hello World!${XTermColor.reset}')
+/// ```
 
 class XTermColor {
-  /// Represents the ANSI escape sequence for reset colors.
-  static const reset = '\x1B[0m';
+  /// ForegroundColors
 
-  // ForegroundColors
-
-  //~~~~~~~~~~~ Default elegant colors codes ~~~~~~~~~~~~~
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Default elegant foreground colors codes
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Represents the ANSI escape sequence for the foreground color  bright orang.
   static const main = '\x1B[38;2;255;165;0m';
 
@@ -26,7 +33,9 @@ class XTermColor {
   /// Represents the ANSI escape sequence for the foreground color limeGreen.
   static const limeGreen = '\x1B[38;2;50;205;50m';
 
-  //~~~~~~~~~~~ Default colors codes ~~~~~~~~~~~~~~~~~~~~~
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Default foreground colors codes
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Represents the ANSI escape sequence for the foreground color black.
   static const black = '\x1B[30m';
 
@@ -51,7 +60,9 @@ class XTermColor {
   /// Represents the ANSI escape sequence for the foreground color white.
   static const white = '\x1B[37m';
 
-  // Bright Colors
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Default Bright foreground colors codes
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Represents the ANSI escape sequence for the foreground color bright black.
   static const blackBright = '\x1B[90m';
 
@@ -76,7 +87,9 @@ class XTermColor {
   /// Represents the ANSI escape sequence for the foreground color bright white.
   static const whiteBright = '\x1B[97m';
 
-  //BackgroundColors
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Default BackgroundColors colors codes
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Represents the ANSI escape sequence for the background color black.
   static const blackBg = '\x1B[40m';
 
@@ -101,7 +114,9 @@ class XTermColor {
   /// Represents the ANSI escape sequence for the background color white.
   static const whiteBg = '\x1B[47m';
 
-  // Bright
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Default Bright BackgroundColors colors codes
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Represents the ANSI escape sequence for the background color bright black.
   static const blackBrightBg = '\x1B[100m';
 
@@ -126,6 +141,12 @@ class XTermColor {
   /// Represents the ANSI escape sequence for the background color bright white.
   static const whiteBrightBg = '\x1B[107m';
 
+  /// Represents the ANSI escape sequence for reset colors.
+  static const reset = '\x1B[0m';
+
+  ///────────────────────────────────────────────────────────────────────────────────
+  ///🔹  Converter colors functions
+  ///────────────────────────────────────────────────────────────────────────────────
   /// Converts a color code from the xterm-256color palette to a foreground ANSI escape sequence.
   ///
   /// [codeColor] - The color code (0-255) from the xterm-256color palette.
@@ -161,6 +182,16 @@ class XTermColor {
     }
   }
 
+  static String? _validateRgb(String name, int value) {
+    if (value < 0) {
+      return '$name color is invalid! [needs to be greater than 0]';
+    }
+    if (value > 255) {
+      return '$name color is invalid! [needs to be less than 256]';
+    }
+    return null;
+  }
+
   /// Converts RGB values to a foreground ANSI escape sequence.
   ///
   /// [red]   - The red component of the color (0-255).
@@ -171,21 +202,11 @@ class XTermColor {
   /// '\x1B[38;2;<red>;<green>;<blue>m'
   ///
   static String rgbFg(int red, int green, int blue) {
-    if (red < 0) {
-      return 'Red color is invalid! [needs to be Grater and then 0]';
-    } else if (red > 255) {
-      return 'Red color is invalid![needs to be less than 256]';
-    } else if (green < 0) {
-      return 'Green color is invalid! [needs to be Grater and then 0]';
-    } else if (green > 255) {
-      return 'Green color is invalid![needs to be less than 256]';
-    } else if (blue < 0) {
-      return 'Blue color is invalid! [needs to be Grater and then 0]';
-    } else if (blue > 255) {
-      return 'Blue color is invalid![needs to be less than 256]';
-    } else {
-      return '\x1B[38;2;$red;$green;${blue}m';
+    for (final entry in {'Red': red, 'Green': green, 'Blue': blue}.entries) {
+      final error = _validateRgb(entry.key, entry.value);
+      if (error != null) return error;
     }
+    return '\x1B[38;2;$red;$green;${blue}m';
   }
 
   /// Converts RGB values to a background ANSI escape sequence.
@@ -198,21 +219,11 @@ class XTermColor {
   /// '\x1B[48;2;<red>;<green>;<blue>m'
   ///
   static String rgbBg(int red, int green, int blue) {
-    if (red < 0) {
-      return 'Red color is invalid! [needs to be Grater and then 0]';
-    } else if (red > 255) {
-      return 'Red color is invalid![needs to be less than 256]';
-    } else if (green < 0) {
-      return 'Green color is invalid! [needs to be Grater and then 0]';
-    } else if (green > 255) {
-      return 'Green color is invalid![needs to be less than 256]';
-    } else if (blue < 0) {
-      return 'Blue color is invalid! [needs to be Grater and then 0]';
-    } else if (blue > 255) {
-      return 'Blue color is invalid![needs to be less than 256]';
-    } else {
-      return '\x1B[48;2;$red;$green;${blue}m';
+    for (final entry in {'Red': red, 'Green': green, 'Blue': blue}.entries) {
+      final error = _validateRgb(entry.key, entry.value);
+      if (error != null) return error;
     }
+    return '\x1B[48;2;$red;$green;${blue}m';
   }
 
   /// Converts a HEX color code to a foreground ANSI escape sequence.
@@ -223,49 +234,36 @@ class XTermColor {
   /// #RRGGBB, 0xRRGGBB, &HRRGGBB, RRGGBBh, #RGB, 0xRGB, 0xAARRGGBB
   ///
   static String hexFg(String hexColor) {
-    String cleanedColor = hexColor;
+    // Limpeza da string, removendo prefixos como '#', '0x', '&H' e sufixos 'h'
+    final cleaned = hexColor
+        .replaceAll(RegExp(r'^(#|0x|&H)', caseSensitive: false), '')
+        .replaceAll(RegExp(r'h$', caseSensitive: false), '');
 
-    // Remove diferentes prefixos e caracteres não essenciais
-    if (hexColor.startsWith('#')) {
-      cleanedColor = hexColor.substring(1);
-    } else if (hexColor.startsWith('0x')) {
-      cleanedColor = hexColor.substring(2);
-    } else if (hexColor.startsWith('&H')) {
-      cleanedColor = hexColor.substring(2);
-    } else if (hexColor.endsWith('h')) {
-      cleanedColor = hexColor.substring(0, hexColor.length - 1);
-    } else {
-      return 'FormatException: Invalid hexdecimal format';
+    // Verificação do tamanho da string e conversão para o formato adequado
+    final hex = switch (cleaned.length) {
+      // RGB (ex: #abc -> aabbcc)
+      3 => cleaned.split('').map((c) => '$c$c').join(),
+      // RGBA (ex: #abcd -> cd)
+      4 => cleaned.split('').map((c) => '$c$c').join().substring(2),
+      6 => cleaned, // RRGGBB (ex: #aabbcc -> aabbcc)
+      // AARRGGBB (ex: #aarrggbb -> rrggbb)
+      8 => cleaned.substring(2),
+      _ => throw ArgumentError('Invalid hexColor format: $hexColor'),
+    };
+
+    // Verificação para garantir que o tamanho da string seja correto (6 ou 8 caracteres)
+    if (hex.length != 6) {
+      throw FormatException(
+          'Hex color must be 6 characters long (RRGGBB). Invalid input: $hexColor');
     }
 
-    // Expand shorthand #RGB to #RRGGBB
-    if (cleanedColor.length == 3) {
-      cleanedColor = cleanedColor.split('').map((c) => '$c$c').join();
-    }
+    // Parse dos valores RGB do formato hexadecimal
+    final red = int.parse(hex.substring(0, 2), radix: 16);
+    final green = int.parse(hex.substring(2, 4), radix: 16);
+    final blue = int.parse(hex.substring(4, 6), radix: 16);
 
-    // Handle #RGBA and #RRGGBBAA formats by stripping the alpha channel
-    if (cleanedColor.length == 4) {
-      cleanedColor = cleanedColor
-          .split('')
-          .map((c) => '$c$c')
-          .join()
-          .substring(0, 6); // Ignore the first two characters (alpha)
-    } else if (cleanedColor.length == 8) {
-      cleanedColor =
-          cleanedColor.substring(2); // Ignore the first two characters (alpha)
-    }
-
-    // Ensure the cleanedColor is now 6 characters long
-    if (cleanedColor.length != 6) {
-      throw ArgumentError('Invalid hexColor format');
-    }
-
-    // Convert hex to RGB
-    int red = int.parse(cleanedColor.substring(0, 2), radix: 16);
-    int green = int.parse(cleanedColor.substring(2, 4), radix: 16);
-    int blue = int.parse(cleanedColor.substring(4, 6), radix: 16);
-
-    return '\x1B[38;2;$red;$green;${blue}m';
+    // Retorna o código ANSI para a cor do texto
+    return '\x1B[38;2;$red;$green;$blue m';
   }
 
   /// Converts a HEX color code to a background ANSI escape sequence.
@@ -276,49 +274,36 @@ class XTermColor {
   /// #RRGGBB, 0xRRGGBB, &HRRGGBB, RRGGBBh, #RGB, 0xRGB, 0xAARRGGBB
   ///
   static String hexBg(String hexColor) {
-    String cleanedColor = hexColor;
+    // Limpeza da string, removendo prefixos como '#', '0x', '&H' e sufixos 'h'
+    final cleaned = hexColor
+        .replaceAll(RegExp(r'^(#|0x|&H)', caseSensitive: false), '')
+        .replaceAll(RegExp(r'h$', caseSensitive: false), '');
 
-    // Remove diferentes prefixos e caracteres não essenciais
-    if (hexColor.startsWith('#')) {
-      cleanedColor = hexColor.substring(1);
-    } else if (hexColor.startsWith('0x')) {
-      cleanedColor = hexColor.substring(2);
-    } else if (hexColor.startsWith('&H')) {
-      cleanedColor = hexColor.substring(2);
-    } else if (hexColor.endsWith('h')) {
-      cleanedColor = hexColor.substring(0, hexColor.length - 1);
-    } else {
-      return 'FormatException: Invalid hexdecimal format';
+    // Verificação do tamanho da string e conversão para o formato adequado
+    final hex = switch (cleaned.length) {
+      // RGB (ex: #abc -> aabbcc)
+      3 => cleaned.split('').map((c) => '$c$c').join(),
+      // RGBA (ex: #abcd -> cd)
+      4 => cleaned.split('').map((c) => '$c$c').join().substring(2),
+      6 => cleaned, // RRGGBB (ex: #aabbcc -> aabbcc)
+      8 => cleaned.substring(2), // AARRGGBB (ex: #aarrggbb -> rrggbb)
+      _ => throw ArgumentError(
+          'Invalid hexColor format: $hexColor'), // Caso inválido
+    };
+
+    // Verificação para garantir que o tamanho da string seja correto (6 ou 8 caracteres)
+    if (hex.length != 6) {
+      throw FormatException(
+          'Hex color must be 6 characters long (RRGGBB). Invalid input: $hexColor');
     }
 
-    // Expand shorthand #RGB to #RRGGBB
-    if (cleanedColor.length == 3) {
-      cleanedColor = cleanedColor.split('').map((c) => '$c$c').join();
-    }
+    // Parse dos valores RGB do formato hexadecimal
+    final red = int.parse(hex.substring(0, 2), radix: 16);
+    final green = int.parse(hex.substring(2, 4), radix: 16);
+    final blue = int.parse(hex.substring(4, 6), radix: 16);
 
-    // Handle #RGBA and #RRGGBBAA formats by stripping the alpha channel
-    if (cleanedColor.length == 4) {
-      cleanedColor = cleanedColor
-          .split('')
-          .map((c) => '$c$c')
-          .join()
-          .substring(0, 6); // Ignore the first two characters (alpha)
-    } else if (cleanedColor.length == 8) {
-      cleanedColor =
-          cleanedColor.substring(2); // Ignore the first two characters (alpha)
-    }
-
-    // Ensure the cleanedColor is now 6 characters long
-    if (cleanedColor.length != 6) {
-      throw ArgumentError('Invalid hexColor format');
-    }
-
-    // Convert hex to RGB
-    int red = int.parse(cleanedColor.substring(0, 2), radix: 16);
-    int green = int.parse(cleanedColor.substring(2, 4), radix: 16);
-    int blue = int.parse(cleanedColor.substring(4, 6), radix: 16);
-
-    return '\x1B[48;2;$red;$green;${blue}m';
+    // Retorna o código ANSI para a cor de fundo
+    return '\x1B[48;2;$red;$green;$blue m';
   }
 
   static String printColors() {
