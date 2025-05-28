@@ -88,6 +88,8 @@ void main() {
     placeholders: {'usuario': 'João', 'acao': 'logado no sistema'},
   );
 
+  //TODO: Tratar o caso de n existir o placeholder
+  //Trabalhar com parâmetros nomeados
   // Definir presets de estilo para facilitar
   builder.setPreset('alerta', XTermColor.yellow, XTermStyle.bold);
   builder.setPreset('sucesso', XTermColor.green, XTermStyle.underlined);

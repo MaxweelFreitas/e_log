@@ -32,34 +32,24 @@ class EApiBuilder {
 
   String build() {
     final buffer = StringBuffer();
-
-    // Top border
     buffer
         .writeln(style.topLeft + style.horizontal * boxWidth + style.topRight);
 
-    // Headers (if any)
     if (headers?.isNotEmpty == true) {
       _writeHeaders(buffer, headers!);
     }
 
-    // Data Sections
     for (final entry in data.entries) {
       _writeSection(buffer, entry.key, () {
-        if (entry.value is Map<String, dynamic>) {
-          buffer.write(_renderMap(entry.value, hasMoreSiblings: []));
-        } else {
-          _writeField(buffer, '', entry.value.toString());
-        }
+        buffer.write(_renderValue(entry.value));
       });
     }
 
-    // Bottom border
     final bottom =
         style.bottomLeft + (style.horizontal * boxWidth) + style.bottomRight;
     buffer.writeln(
         shadowLevel != EBoxShadow.none ? '$bottom$_shadowChar' : bottom);
 
-    // Bottom shadow
     if (shadowLevel != EBoxShadow.none) {
       buffer.writeln('  ${_shadowChar * (boxWidth + 1)}');
     }
@@ -123,6 +113,30 @@ class EApiBuilder {
     _writeShadowLine(buffer, line);
   }
 
+  void _writeShadowLine(StringBuffer buffer, String line) {
+    buffer.writeln(shadowLevel != EBoxShadow.none ? '$line$_shadowChar' : line);
+  }
+
+  String _renderValue(dynamic value,
+      {int indent = 0, List<bool> hasMoreSiblings = const []}) {
+    if (value is Map) {
+      return _renderMap(value,
+          indent: indent, hasMoreSiblings: hasMoreSiblings);
+    } else if (value is List) {
+      return _renderList(value,
+          indent: indent, hasMoreSiblings: hasMoreSiblings);
+    } else {
+      final prefix = StringBuffer();
+      for (int level = 0; level < indent; level++) {
+        prefix.write((level < hasMoreSiblings.length && hasMoreSiblings[level])
+            ? '│  '
+            : '   ');
+      }
+      prefix.write('├─ ');
+      return _mapLine('$prefix${value.toString()}');
+    }
+  }
+
   String _renderMap(Map map,
       {int indent = 0, List<bool> hasMoreSiblings = const []}) {
     final buffer = StringBuffer();
@@ -141,7 +155,7 @@ class EApiBuilder {
       }
       prefix.write(isLast ? '└─ ' : '├─ ');
 
-      if (value is Map) {
+      if (value is Map || value is List) {
         buffer.writeln(_mapLine('$prefix$key:'));
         final siblings = [...hasMoreSiblings];
         if (siblings.length > indent) {
@@ -150,9 +164,43 @@ class EApiBuilder {
           siblings.add(!isLast);
         }
         buffer.write(
-            _renderMap(value, indent: indent + 1, hasMoreSiblings: siblings));
+            _renderValue(value, indent: indent + 1, hasMoreSiblings: siblings));
       } else {
         buffer.writeln(_mapLine('$prefix$key: ${value.toString()}'));
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  String _renderList(List list,
+      {int indent = 0, List<bool> hasMoreSiblings = const []}) {
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < list.length; i++) {
+      final item = list[i];
+      final isLast = i == list.length - 1;
+
+      final prefix = StringBuffer();
+      for (int level = 0; level < indent; level++) {
+        prefix.write((level < hasMoreSiblings.length && hasMoreSiblings[level])
+            ? '│  '
+            : '   ');
+      }
+      prefix.write(isLast ? '└─ ' : '├─ ');
+
+      if (item is Map || item is List) {
+        buffer.writeln(_mapLine('$prefix[$i]:'));
+        final siblings = [...hasMoreSiblings];
+        if (siblings.length > indent) {
+          siblings[indent] = !isLast;
+        } else {
+          siblings.add(!isLast);
+        }
+        buffer.write(
+            _renderValue(item, indent: indent + 1, hasMoreSiblings: siblings));
+      } else {
+        buffer.writeln(_mapLine('$prefix[$i]: ${item.toString()}'));
       }
     }
 
@@ -165,10 +213,6 @@ class EApiBuilder {
     final line =
         '${style.vertical} ${trimmed.padRight(boxWidth - 1)}${style.vertical}';
     return shadowLevel != EBoxShadow.none ? '$line$_shadowChar' : line;
-  }
-
-  void _writeShadowLine(StringBuffer buffer, String line) {
-    buffer.writeln(shadowLevel != EBoxShadow.none ? '$line$_shadowChar' : line);
   }
 }
 
@@ -223,6 +267,35 @@ void main() {
   );
 
   for (final line in box.build().split('\n')) {
+    print('${XTermColor.main} $line');
+  }
+
+  final box1 = EApiBuilder(
+    style: EBoxStyle.rounded,
+    shadowLevel: EBoxShadow.light,
+    headers: ['[2025-05-28]', '[INFO]', '[Lista de Cidades]'],
+    data: {
+      'Cidades': [
+        {
+          'id': 1,
+          'nome': 'Água Branca',
+          'estado': 'AL',
+        },
+        {
+          'id': 2,
+          'nome': 'Anadia',
+          'estado': 'AL',
+        },
+        {
+          'id': 3,
+          'nome': 'Arapiraca',
+          'estado': 'AL',
+        },
+      ],
+    },
+  );
+
+  for (final line in box1.build().split('\n')) {
     print('${XTermColor.main} $line');
   }
 }
