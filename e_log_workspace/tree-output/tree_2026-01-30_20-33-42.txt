@@ -1,0 +1,177 @@
+.
+├── elog
+│   ├── analysis_options.yaml
+│   ├── bin
+│   │   └── demo_wizard.dart
+│   ├── CHANGELOG.md
+│   ├── .dart_tool
+│   │   ├── package_config.json
+│   │   └── package_graph.json
+│   ├── .gitignore
+│   ├── lib
+│   │   ├── elog.dart
+│   │   └── src
+│   │       ├── base
+│   │       │   └── x_term
+│   │       │       ├── x_term_color.dart
+│   │       │       └── x_term_style.dart
+│   │       ├── core
+│   │       │   ├── contracts
+│   │       │   │   ├── elog_component.dart
+│   │       │   │   ├── elog_output.dart
+│   │       │   │   └── elog_renderable.dart
+│   │       │   ├── models
+│   │       │   │   └── elog_record.dart
+│   │       │   ├── pipeline
+│   │       │   │   └── elog_pipeline.dart
+│   │       │   └── terminal
+│   │       │       ├── terminal_info.dart
+│   │       │       └── terminal_width.dart
+│   │       ├── features
+│   │       │   ├── api
+│   │       │   │   ├── e_api_builder.dart
+│   │       │   │   └── style
+│   │       │   │       ├── e_api_presets.dart
+│   │       │   │       └── e_api_style.dart
+│   │       │   ├── block
+│   │       │   │   ├── block_builder.dart
+│   │       │   │   └── style
+│   │       │   │       ├── block_presets.dart
+│   │       │   │       └── block_style.dart
+│   │       │   ├── box
+│   │       │   │   ├── box_component.dart
+│   │       │   │   ├── ebox_builder.dart
+│   │       │   │   ├── elog_box.dart
+│   │       │   │   └── style
+│   │       │   │       ├── box_presets.dart
+│   │       │   │       ├── box_style.dart
+│   │       │   │       ├── e_box_shadow.dart
+│   │       │   │       └── shadow_style.dart
+│   │       │   ├── chart
+│   │       │   │   ├── chart_builder.dart
+│   │       │   │   └── style
+│   │       │   │       ├── chart_presets.dart
+│   │       │   │       └── chart_style.dart
+│   │       │   ├── log
+│   │       │   │   ├── builder
+│   │       │   │   │   ├── e_log_builder.dart
+│   │       │   │   │   ├── elog_component.dart
+│   │       │   │   │   └── elog_factory.dart
+│   │       │   │   ├── config
+│   │       │   │   │   └── elog_config.dart
+│   │       │   │   ├── elog_level.dart
+│   │       │   │   ├── outputs
+│   │       │   │   │   ├── console_output.dart
+│   │       │   │   │   ├── e_log_multiplexer.dart
+│   │       │   │   │   ├── file_output.dart
+│   │       │   │   │   └── memory_output.dart
+│   │       │   │   └── style
+│   │       │   ├── progress
+│   │       │   │   ├── progress_builder.dart
+│   │       │   │   └── style
+│   │       │   │       ├── progress_presets.dart
+│   │       │   │       └── progress_style.dart
+│   │       │   ├── spinner
+│   │       │   │   ├── elog_loading.dart
+│   │       │   │   ├── engine
+│   │       │   │   ├── e_spinner_builder.dart
+│   │       │   │   ├── loading_renderable.dart
+│   │       │   │   ├── spinner_controller.dart
+│   │       │   │   ├── spinner.dart
+│   │       │   │   ├── spinner_factory.dart
+│   │       │   │   ├── spinner_frame.dart
+│   │       │   │   ├── spinner_renderable.dart
+│   │       │   │   ├── spinner_renderer.dart
+│   │       │   │   ├── spinner_set.dart
+│   │       │   │   └── style
+│   │       │   │       └── spinner_presets.dart
+│   │       │   ├── stepper
+│   │       │   │   ├── elog_step.dart
+│   │       │   │   ├── elog_stepper.dart
+│   │       │   │   ├── elog_stepper_renderer.dart
+│   │       │   │   ├── e_stepper_builder.dart
+│   │       │   │   └── stepper_renderable.dart
+│   │       │   ├── table
+│   │       │   │   ├── e_table_builder.dart
+│   │       │   │   ├── model
+│   │       │   │   │   ├── e_cell.dart
+│   │       │   │   │   └── e_cell_text_align.dart
+│   │       │   │   └── style
+│   │       │   │       ├── table_presets.dart
+│   │       │   │       └── table_style.dart
+│   │       │   ├── tree
+│   │       │   │   ├── e_tree_builder.dart
+│   │       │   │   └── style
+│   │       │   │       ├── tree_presets.dart
+│   │       │   │       └── tree_style.dart
+│   │       │   └── wizard
+│   │       │       ├── engine
+│   │       │       │   └── input_reader.dart
+│   │       │       ├── e_wizard_builder.dart
+│   │       │       ├── steps
+│   │       │       │   ├── e_wizard_step.dart
+│   │       │       │   ├── future_step.dart
+│   │       │       │   ├── info_steps.dart
+│   │       │       │   ├── input_text_step.dart
+│   │       │       │   ├── message_step.dart
+│   │       │       │   ├── multi_select_step.dart
+│   │       │       │   ├── select_step.dart
+│   │       │       │   └── toggle_step.dart
+│   │       │       └── style
+│   │       │           ├── e_wizard_presets.dart
+│   │       │           ├── e_wizard_style.dart
+│   │       │           └── step_presets.dart
+│   │       ├── manager
+│   │       │   ├── activity_controller.dart
+│   │       │   └── e_interactive.dart
+│   │       ├── shared
+│   │       │   ├── border_set.dart
+│   │       │   ├── fill_set.dart
+│   │       │   └── icon_set.dart
+│   │       └── utils
+│   │           ├── ansi_utils.dart
+│   │           ├── color_utils.dart
+│   │           ├── elegant_json.dart
+│   │           ├── string_utils.dart
+│   │           ├── system_utils.dart
+│   │           └── terminal_utils.dart
+│   ├── pubspec.lock
+│   ├── pubspec.yaml
+│   └── README.md
+├── examples
+│   ├── e_log_demo_dart
+│   │   ├── analysis_options.yaml
+│   │   ├── bin
+│   │   │   ├── demo_api.dart
+│   │   │   ├── demo_block.dart
+│   │   │   ├── demo_boxes.dart
+│   │   │   ├── demo_chart.dart
+│   │   │   ├── demo_logger.dart
+│   │   │   ├── demo_progress.dart
+│   │   │   ├── demo_spinners.dart
+│   │   │   ├── demo_tables.dart
+│   │   │   ├── demo_tree.dart
+│   │   │   └── demo_wizard.dart
+│   │   ├── CHANGELOG.md
+│   │   ├── .dart_tool
+│   │   │   ├── package_config.json
+│   │   │   ├── package_graph.json
+│   │   │   └── pub
+│   │   │       └── bin
+│   │   │           └── test
+│   │   │               └── test.dart-3.10.7.snapshot
+│   │   ├── .gitignore
+│   │   ├── lib
+│   │   ├── pubspec.lock
+│   │   ├── pubspec.yaml
+│   │   ├── README.md
+│   │   └── test
+│   └── e_log_demo_flutter
+├── makefile
+├── README.md
+└── tree-output
+    ├── tree_2026-01-30_20-21-19.txt
+    ├── tree_2026-01-30_20-21-53.txt
+    └── tree_2026-01-30_20-33-42.txt
+
+56 directories, 119 files
