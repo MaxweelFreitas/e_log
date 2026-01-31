@@ -55,7 +55,7 @@ class ProgressBuilder {
 
       // 5. Define a largura em "passos"
       _barWidth = availableColumns ~/ safeCharWidth;
-    } on Exception catch (e) {
+    } on Exception {
       _barWidth = 40;
     }
   }

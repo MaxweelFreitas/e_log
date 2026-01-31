@@ -203,9 +203,9 @@ class ELogBuilder {
     final shadow = _style.shadow;
     final hasShadow = shadow != null;
     final int shadowCharWidth =
-        hasShadow ? StringUtils.visualLength(shadow!.char) : 0;
+        hasShadow ? StringUtils.visualLength(shadow.char) : 0;
     final shadowRightStr =
-        hasShadow ? '${shadow!.color}${shadow.char}$reset' : '';
+        hasShadow ? '${shadow.color}${shadow.char}$reset' : '';
 
     String lineEnd() => '$shadowRightStr\n';
 
@@ -400,7 +400,7 @@ class ELogBuilder {
     if (hasShadow) {
       buffer.write(' ' * shadowCharWidth);
 
-      final pattern = shadow!.char;
+      final pattern = shadow.char;
       final int repeats = (finalBoxWidth / pattern.length).ceil();
       String rawShadow = pattern * repeats;
 

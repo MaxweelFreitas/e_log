@@ -118,12 +118,14 @@ void main() {
   print(
     EBoxBuilder()
         .title('Rainbow Fill', borderLeft: ' ', borderRight: ' ')
-        .content('Texto Curto') // Texto menor que a largura mínima
+        .content(
+          'Sunset text often features warm, glowing, or romantic themes, commonly used for photo captions, graphic design, and emotional quotes. \nKey phrases include "Sunsets are proof that every day can end beautifully" and "Cloudy skies, golden hearts". Popular keywords for these designs are fiery, scarlet, golden, and dreamy. ',
+        ) // Texto menor que a largura mínima
         .style(BoxPresets.rainbow)
-        // .autoWidth()
+        .width(80)
         .build(),
   );
-  print('');
+  // print('');
 
   // C. Teste de Largura Fixa + Quebra de Linha + Sombra Custom
   print(
@@ -167,5 +169,5 @@ void _printBox(
   }
 
   print(builder.build());
-  print(''); // Espaço entre boxes
+  // print(''); // Espaço entre boxes
 }

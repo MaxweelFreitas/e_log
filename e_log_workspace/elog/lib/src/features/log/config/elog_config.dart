@@ -46,6 +46,7 @@ class ELogConfig {
   EDateType _dateType = EDateType.eu; // Default: 25-01-2024
 
   /// Configura o formato de data global.
+  // ignore: use_setters_to_change_properties
   void setDateType(EDateType type) => _dateType = type;
 
   // --- Opções do Sentry e Erros ---
