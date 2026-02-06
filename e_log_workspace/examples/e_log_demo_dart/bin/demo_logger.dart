@@ -1,4 +1,4 @@
-import 'package:elog/elog.dart';
+import '../../../elog/lib/elog.dart';
 
 void main() {
   print('\n=== DEMO: LOGGER & CONFIGURAÇÃO ===\n');

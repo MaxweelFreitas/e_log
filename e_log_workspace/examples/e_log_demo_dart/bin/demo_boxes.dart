@@ -1,5 +1,4 @@
-import 'package:elog/elog.dart';
-import 'package:elog/src/base/x_term/x_term_color.dart';
+import '../../../elog/lib/elog.dart';
 
 void main() {
   print('\n╔══════════════════════════════════════════════════════════════╗');

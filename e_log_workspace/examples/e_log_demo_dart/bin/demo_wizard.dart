@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:elog/elog.dart';
+
+import '../../../elog/lib/elog.dart';
 
 void main() async {
   // ---------------------------------------------------------

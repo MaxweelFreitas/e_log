@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math' as math;
+
 import '../../base/x_term/x_term_color.dart';
 import '../../base/x_term/x_term_style.dart';
 import '../../core/terminal/terminal_width.dart';
@@ -65,7 +66,7 @@ class EChartBuilder {
 
   /// Adiciona dados via Map.
   EChartBuilder data(Map<String, double> data) {
-    data.forEach((key, value) => add(key, value));
+    data.forEach(add);
     return this;
   }
 
@@ -89,8 +90,11 @@ class EChartBuilder {
     return this;
   }
 
-  EChartBuilder gradient(Rgb start, Rgb end,
-      {ChartGradientType type = ChartGradientType.global}) {
+  EChartBuilder gradient(
+    Rgb start,
+    Rgb end, {
+    ChartGradientType type = ChartGradientType.global,
+  }) {
     _gradientStart = start;
     _gradientEnd = end;
     _gradientType = type;
@@ -112,9 +116,11 @@ class EChartBuilder {
 
     if (_items.isEmpty) return 'No data.';
 
-    buffer.write(_orientation == ChartOrientation.vertical
-        ? _renderVertical()
-        : _renderHorizontal());
+    buffer.write(
+      _orientation == ChartOrientation.vertical
+          ? _renderVertical()
+          : _renderHorizontal(),
+    );
 
     return buffer.toString();
   }
@@ -134,14 +140,14 @@ class EChartBuilder {
     final height = _style.size ?? 10;
 
     final colors = _generateColors(
-        steps:
-            _gradientType == ChartGradientType.global ? _items.length : height);
+      steps: _gradientType == ChartGradientType.global ? _items.length : height,
+    );
 
     for (int row = height; row > 0; row--) {
       final barGradientColor =
           (_gradientType == ChartGradientType.bar && colors != null)
-              ? colors[height - row]
-              : null;
+          ? colors[height - row]
+          : null;
 
       for (var i = 0; i < _items.length; i++) {
         final item = _items[i];
@@ -149,15 +155,16 @@ class EChartBuilder {
         final barCharWidth = StringUtils.visualLength(_style.barChar);
         final labelWidth = StringUtils.visualLength(item.label);
 
-        final colWidth = _style.columnWidth ??
+        final colWidth =
+            _style.columnWidth ??
             math.max(3, math.max(labelWidth, barCharWidth));
 
         final itemHeight = (item.value / maxValue * height).round();
 
         final color =
             (_gradientType == ChartGradientType.global && colors != null)
-                ? colors[i]
-                : (barGradientColor ?? _style.barColor);
+            ? colors[i]
+            : (barGradientColor ?? _style.barColor);
 
         var displayBarChar = _style.barChar;
         if (StringUtils.visualLength(displayBarChar) > colWidth) {
@@ -171,7 +178,8 @@ class EChartBuilder {
 
         if (itemHeight >= row) {
           buffer.write(
-              '$leftPad$color$displayBarChar${XTermColor.reset}$rightPad');
+            '$leftPad$color$displayBarChar${XTermColor.reset}$rightPad',
+          );
         } else {
           buffer.write(' ' * colWidth);
         }
@@ -229,8 +237,9 @@ class EChartBuilder {
     if (_items.isEmpty) return '';
 
     final maxValue = _items.map((e) => e.value).reduce(math.max);
-    final maxLabelLen =
-        _items.map((e) => StringUtils.visualLength(e.label)).reduce(math.max);
+    final maxLabelLen = _items
+        .map((e) => StringUtils.visualLength(e.label))
+        .reduce(math.max);
 
     final valueSpace = _style.showValue ? 7 : 0;
     final overhead = maxLabelLen + 1 + valueSpace;
@@ -247,8 +256,9 @@ class EChartBuilder {
     final maxSlots = visualAvailableWidth ~/ barCharWidth;
 
     final colors = _generateColors(
-      steps:
-          _gradientType == ChartGradientType.global ? _items.length : maxSlots,
+      steps: _gradientType == ChartGradientType.global
+          ? _items.length
+          : maxSlots,
     );
 
     for (var i = 0; i < _items.length; i++) {
@@ -277,10 +287,11 @@ class EChartBuilder {
         final emptyCharWidth = StringUtils.visualLength(_style.emptyChar);
         final emptySlots =
             (visualAvailableWidth - (filledSlots * barCharWidth)) ~/
-                emptyCharWidth;
+            emptyCharWidth;
         final safeEmptySlots = math.max(0, emptySlots);
-        buffer
-            .write('${_style.emptyColor}${_style.emptyChar * safeEmptySlots}');
+        buffer.write(
+          '${_style.emptyColor}${_style.emptyChar * safeEmptySlots}',
+        );
       }
 
       if (_style.showValue) {
@@ -299,11 +310,7 @@ class EChartBuilder {
 
   List<String>? _generateColors({required int steps}) {
     if (_gradientStart != null && _gradientEnd != null && steps > 0) {
-      return ColorUtils.generateGradient(
-        _gradientStart!,
-        _gradientEnd!,
-        steps,
-      );
+      return ColorUtils.generateGradient(_gradientStart!, _gradientEnd!, steps);
     }
 
     if (_style.gradientStart != null &&

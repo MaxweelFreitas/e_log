@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:elog/elog.dart';
+
+import '../../../elog/lib/elog.dart';
 
 class ZeroSizeFileGroup {
   final String baseName;
@@ -95,7 +96,7 @@ Future<void> main() async {
     // =========================================================
     // 2. VARREDURA COM SPINNER
     // =========================================================
-    Elog.info('Iniciando varredura em: $path');
+    // Elog.info('Iniciando varredura em: $path');
 
     final spinner = Elog.spinner(
       text: 'Analisando arquivos...',

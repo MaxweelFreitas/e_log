@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:elog/elog.dart';
-import 'package:elog/src/utils/color_utils.dart'; // Idealmente, exporte Rgb no elog.dart para evitar importar src
+
+import '../../../elog/lib/elog.dart';
 
 void main() async {
   print('\n╔══════════════════════════════════════════════════════════════╗');

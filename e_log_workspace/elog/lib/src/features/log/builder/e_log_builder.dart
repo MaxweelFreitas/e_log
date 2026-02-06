@@ -1,30 +1,23 @@
 import 'dart:math' as math;
+
 import '../../../base/x_term/x_term_color.dart';
 import '../../../base/x_term/x_term_style.dart';
-import '../../../utils/string_utils.dart';
-import '../../../utils/color_utils.dart';
+import '../../../core/models/elog_record.dart';
 import '../../../core/terminal/terminal_info.dart';
+import '../../../core/terminal/terminal_width.dart';
+import '../../../utils/color_utils.dart';
+import '../../../utils/string_utils.dart';
+import '../../box/style/shadow_style.dart';
 import '../config/elog_config.dart';
 import '../elog_level.dart';
-import '../../../core/terminal/terminal_width.dart';
-import '../../../core/models/elog_record.dart';
-
 // Imports de Estilo
 import '../style/e_log_presets.dart';
 import '../style/e_log_style.dart';
-import '../../box/style/shadow_style.dart';
 
-enum ELogLayout {
-  inline,
-  boxed,
-}
+enum ELogLayout { inline, boxed }
 
 /// Define o alinhamento da tag de nível no topo da caixa (ex: [ INFO ]).
-enum ELogTagAlign {
-  left,
-  center,
-  right,
-}
+enum ELogTagAlign { left, center, right }
 
 class ELogBuilder {
   // Configuração
@@ -153,8 +146,9 @@ class ELogBuilder {
       title: _title,
       source: _sourcePath,
       error: _level == ELogLevel.error ? _message : null,
-      stackTrace:
-          _stackTrace != null ? StackTrace.fromString(_stackTrace!) : null,
+      stackTrace: _stackTrace != null
+          ? StackTrace.fromString(_stackTrace!)
+          : null,
       linkUrl: _linkUrl,
     );
 
@@ -182,8 +176,10 @@ class ELogBuilder {
     buffer.write('$cMsg $_message$reset');
 
     if (_linkUrl != null) {
-      final clickable =
-          XTermStyle.link(url: _linkUrl!, linkText: _linkText ?? 'Link');
+      final clickable = XTermStyle.link(
+        url: _linkUrl!,
+        linkText: _linkText ?? 'Link',
+      );
       buffer.write(' $clickable');
     }
     return buffer.toString();
@@ -191,7 +187,8 @@ class ELogBuilder {
 
   String _buildBoxed() {
     final border = _style.border;
-    final borderColor = _style.borderColor ??
+    final borderColor =
+        _style.borderColor ??
         (_level == ELogLevel.info ? XTermColor.white : _level.color);
 
     final cTime = _style.timestampColor;
@@ -202,10 +199,12 @@ class ELogBuilder {
     // --- SETUP SOMBRA ---
     final shadow = _style.shadow;
     final hasShadow = shadow != null;
-    final int shadowCharWidth =
-        hasShadow ? StringUtils.visualLength(shadow.char) : 0;
-    final shadowRightStr =
-        hasShadow ? '${shadow.color}${shadow.char}$reset' : '';
+    final int shadowCharWidth = hasShadow
+        ? StringUtils.visualLength(shadow.char)
+        : 0;
+    final shadowRightStr = hasShadow
+        ? '${shadow.color}${shadow.char}$reset'
+        : '';
 
     String lineEnd() => '$shadowRightStr\n';
 
@@ -321,11 +320,13 @@ class ELogBuilder {
 
     final int leftConnLen = StringUtils.visualLength(leftConn);
     final int rightConnLen = StringUtils.visualLength(rightConn);
-    final int cornersLen = 2; // topLeft + topRight (assumindo 1 char cada)
+    const int cornersLen = 2; // topLeft + topRight (assumindo 1 char cada)
 
     // Espaço disponível para traços (dashes)
-    final int availableForDashes = math.max(0,
-        finalBoxWidth - titleVisLen - leftConnLen - rightConnLen - cornersLen);
+    final int availableForDashes = math.max(
+      0,
+      finalBoxWidth - titleVisLen - leftConnLen - rightConnLen - cornersLen,
+    );
 
     int leftDash = 0;
     int rightDash = 0;
@@ -360,7 +361,8 @@ class ELogBuilder {
 
     buffer.write(border.top * rightDash);
     buffer.write(
-        '${border.topRight}$reset\n'); // \n direto (sem sombra na linha 1)
+      '${border.topRight}$reset\n',
+    ); // \n direto (sem sombra na linha 1)
 
     // --- B. CAMPOS ---
     if (_title != null) {
@@ -410,7 +412,10 @@ class ELogBuilder {
 
       if (shadow.isGradient) {
         final gradientChars = ColorUtils.generateGradient(
-            shadow.gradientStart!, shadow.gradientEnd!, rawShadow.length);
+          shadow.gradientStart!,
+          shadow.gradientEnd!,
+          rawShadow.length,
+        );
         for (int i = 0; i < rawShadow.length; i++) {
           if (i < gradientChars.length) buffer.write(gradientChars[i]);
           buffer.write(rawShadow[i]);
