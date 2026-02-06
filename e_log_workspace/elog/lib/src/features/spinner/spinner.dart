@@ -6,10 +6,10 @@ import '../../base/x_term/x_term_color.dart';
 class Spinner {
   // --- CONFIGURAÇÕES ---
 
-  /// O texto a ser exibido ao lado do spinner.
-  final String text;
+  /// Texto atual do spinner (Privado para permitir mutabilidade via update).
+  String _text;
 
-  /// Função callback para escrever no terminal (injetada pelo EInteractive).
+  /// Função callback para escrever no terminal.
   final void Function(String) output;
 
   /// A sequência de strings que cria a animação.
@@ -36,73 +36,89 @@ class Spinner {
     '⠇',
     '⠏'
   ];
-  static const List<String> lines = ['-', '\\', '|', '/'];
 
-  /// Construtor com valores padrão.
-  ///
-  /// Isso resolve o erro de "parameter required", pois [frames] e [interval]
-  /// agora são opcionais e têm fallback.
+  // Construtor
   Spinner({
-    required this.text,
+    required String text,
     required this.output,
     List<String>? frames,
     Duration? interval,
-  })  : frames = frames ?? dots, // Se nulo, usa 'dots'
-        interval =
-            interval ?? const Duration(milliseconds: 80); // Se nulo, usa 80ms
+  })  : _text = text,
+        frames = frames ?? dots,
+        interval = interval ?? const Duration(milliseconds: 80);
 
   // ===========================================================================
   // LÓGICA DE CONTROLE
   // ===========================================================================
 
-  /// Inicia a animação (Loop do Timer).
-  /// Resolve o erro: The method 'start' isn't defined.
+  /// Inicia a animação.
   void start() {
     if (_isRunning) return;
     _isRunning = true;
     _frameIndex = 0;
 
-    // Código ANSI para esconder o cursor (opcional, melhora o visual)
+    // Esconde o cursor para visual mais limpo
     output('\x1B[?25l');
 
+    _render(); // Renderiza o primeiro frame imediatamente
     _timer = Timer.periodic(interval, (timer) {
-      _render();
       _frameIndex = (_frameIndex + 1) % frames.length;
+      _render();
     });
   }
 
-  /// Para a animação e limpa a linha atual.
+  /// Para a animação (interno).
   void stop() {
     _timer?.cancel();
     _isRunning = false;
-
-    // Restaura o cursor e limpa a linha
+    // Restaura o cursor
     output('\x1B[?25h');
-    output('\r\x1B[K');
   }
 
-  /// Finaliza com sucesso (Check verde).
+  /// Atualiza o texto do spinner em tempo real.
+  void update(String newText) {
+    _text = newText;
+    // Força renderização imediata para feedback instantâneo
+    if (_isRunning) _render();
+  }
+
+  // ===========================================================================
+  // FINALIZAÇÃO
+  // ===========================================================================
+
+  /// Finaliza o spinner com um estado genérico (usado na Demo).
+  void done({String? text, String? icon}) {
+    stop();
+    final finalText = text ?? _text;
+    final finalIcon = icon ?? '${XTermColor.green}✔${XTermColor.reset}';
+
+    // \r = Início da linha
+    // \x1B[K = Limpa a linha inteira (remove o spinner anterior)
+    output('\r\x1B[K$finalIcon $finalText\n');
+  }
+
+  /// Atalho para sucesso.
   void success([String? message]) {
-    stop();
-    final msg = message ?? text;
-    // \r (início) + \x1B[K (limpa) + ✔ Verde + Texto
-    output('\r\x1B[K${XTermColor.green}✔${XTermColor.reset} $msg\n');
+    done(
+      text: message,
+      icon: '${XTermColor.green}✔${XTermColor.reset}',
+    );
   }
 
-  /// Finaliza com erro (X vermelho).
+  /// Atalho para falha.
   void fail([String? message]) {
-    stop();
-    final msg = message ?? text;
-    output('\r\x1B[K${XTermColor.red}✖${XTermColor.reset} $msg\n');
+    done(
+      text: message,
+      icon: '${XTermColor.red}✖${XTermColor.reset}',
+    );
   }
 
-  /// Atualiza o texto do spinner em tempo real sem parar a animação.
-  void updateText(String newText) {
-    // Apenas muda a propriedade, o próximo _render() usará o novo texto.
-    // Como 'text' é final, tecnicamente precisaríamos tirar o final ou
-    // apenas redesenhar. Para simplicidade, vamos assumir que o texto
-    // inicial é o principal, mas se quiser mutável:
-    // output('\r${frames[_frameIndex]} $newText\x1B[K');
+  /// Atalho para aviso.
+  void warning([String? message]) {
+    done(
+      text: message,
+      icon: '${XTermColor.yellow}⚠${XTermColor.reset}',
+    );
   }
 
   // ===========================================================================
@@ -111,9 +127,8 @@ class Spinner {
 
   void _render() {
     final frame = frames[_frameIndex];
-    // \r = Move cursor pro início
-    // frame + text = Conteúdo
-    // \x1B[K = Limpa o resto da linha (caso o texto anterior fosse maior)
-    output('\r${XTermColor.cyan}$frame${XTermColor.reset} $text\x1B[K');
+    // \r       : Volta o cursor para o início da linha
+    // \x1B[K   : Limpa a linha a partir do cursor (evita lixo de textos longos anteriores)
+    output('\r${XTermColor.cyan}$frame${XTermColor.reset} $_text\x1B[K');
   }
 }

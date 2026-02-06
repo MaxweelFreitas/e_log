@@ -1,6 +1,6 @@
 // Imports dos Controladores
 import '../features/spinner/spinner.dart';
-import '../features/spinner/spinner_set.dart'; // <--- Importante: Adicione este import
+import '../features/spinner/spinner_set.dart';
 import '../features/progress/e_progress_builder.dart';
 import '../features/progress/style/progress_style.dart';
 
@@ -13,7 +13,7 @@ import '../utils/color_utils.dart';
 /// Definição da função de escrita (ex: stdout.write)
 typedef ELogEmit = void Function(String output);
 
-/// Gerenciador Interativo do Ascy.
+/// Gerenciador Interativo do Ascy (Elog).
 class EInteractive {
   final ELogEmit emit;
 
@@ -34,7 +34,7 @@ class EInteractive {
   /// [interval]: (Opcional) Intervalo manual (se [spinner] não for informado).
   Spinner spinner({
     String text = 'Loading...',
-    SpinnerSet? spinner, // <--- NOVO PARÂMETRO
+    SpinnerSet? spinner,
     List<String>? frames,
     Duration? interval,
   }) {
@@ -43,14 +43,12 @@ class EInteractive {
 
     if (spinner != null) {
       // 1. Prioridade: Se passou um Preset (SpinnerSet)
-      // Extraímos o texto de cada frame
       actualFrames = spinner.frames.map((f) => f.value).toList();
-      // Convertemos o int (ms) para Duration
       actualInterval = Duration(milliseconds: spinner.intervalMs);
     } else {
-      // 2. Fallback: Se passou frames manuais ou usa o padrão
-      actualFrames = frames ?? ['.', '..', '...'];
-      actualInterval = interval ?? const Duration(milliseconds: 100);
+      // 2. Fallback: Se passou frames manuais ou usa o padrão (dots)
+      actualFrames = frames ?? Spinner.dots;
+      actualInterval = interval ?? const Duration(milliseconds: 80);
     }
 
     final spinnerController = Spinner(
@@ -73,9 +71,10 @@ class EInteractive {
     String label = 'Progress',
     int total = 100,
     ProgressStyle style = ProgressStyle.block,
-    int? width, // Novo: Forçar largura ou null para auto
-    Rgb? startColor, // Novo
+    int? width,
+    Rgb? startColor,
     Rgb? endColor,
+    bool showPercentage = true, // Novo: Controle de visibilidade
   }) {
     final progressController = ProgressBuilder(
       label: label,
@@ -83,10 +82,13 @@ class EInteractive {
       style: style,
       output: emit,
       width: width,
+      // Mapeando os nomes para o Builder
       gradientStart: startColor,
       gradientEnd: endColor,
+      showPercentage: showPercentage,
     );
 
+    // Renderiza o estado inicial (0%)
     emit(progressController.render());
 
     return progressController;

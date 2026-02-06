@@ -26,7 +26,7 @@ class ChartStyle {
   /// Se deve exibir o valor numérico ao lado da barra.
   final bool showValue;
 
-  /// Largura máx (para Horizontal) ou Altura fixa (para Vertical)
+  /// Largura máx (para Horizontal) ou Altura fixa (para Vertical).
   final int? size;
 
   /// Largura fixa da coluna (apenas Vertical).
@@ -50,9 +50,40 @@ class ChartStyle {
     this.emptyColor = XTermColor.brightBlack,
     this.showValue = true,
     this.size,
-    this.columnWidth, // Novo (Opcional)
-    this.itemGap = 2, // Novo (Default 2)
+    this.columnWidth,
+    this.itemGap = 2,
     this.gradientStart,
     this.gradientEnd,
   });
+
+  /// Cria uma cópia deste estilo com os campos alterados.
+  ChartStyle copyWith({
+    String? barChar,
+    String? emptyChar,
+    String? barColor,
+    String? labelColor,
+    String? valueColor,
+    String? emptyColor,
+    bool? showValue,
+    int? size,
+    int? columnWidth,
+    int? itemGap,
+    Rgb? gradientStart,
+    Rgb? gradientEnd,
+  }) {
+    return ChartStyle(
+      barChar: barChar ?? this.barChar,
+      emptyChar: emptyChar ?? this.emptyChar,
+      barColor: barColor ?? this.barColor,
+      labelColor: labelColor ?? this.labelColor,
+      valueColor: valueColor ?? this.valueColor,
+      emptyColor: emptyColor ?? this.emptyColor,
+      showValue: showValue ?? this.showValue,
+      size: size ?? this.size,
+      columnWidth: columnWidth ?? this.columnWidth,
+      itemGap: itemGap ?? this.itemGap,
+      gradientStart: gradientStart ?? this.gradientStart,
+      gradientEnd: gradientEnd ?? this.gradientEnd,
+    );
+  }
 }

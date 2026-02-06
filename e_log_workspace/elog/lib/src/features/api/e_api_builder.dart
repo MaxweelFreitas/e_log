@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:io'; // Necessário para stdout
+import 'dart:math' as math;
 
 // --- Imports Base ---
 import '../../base/x_term/x_term_style.dart';
@@ -46,7 +47,31 @@ class EApiBuilder {
   bool _isTitleCompact = false;
 
   // ===========================================================================
-  // SETTERS (Builder Pattern)
+  // FLUENT SETTERS (Adicionados para compatibilidade com Demo)
+  // ===========================================================================
+
+  EApiBuilder method(String method) {
+    _method = method;
+    return this;
+  }
+
+  EApiBuilder url(String url) {
+    _url = url;
+    return this;
+  }
+
+  EApiBuilder statusCode(int code) {
+    _statusCode = code;
+    return this;
+  }
+
+  EApiBuilder timeTaken(String time) {
+    _timeTaken = time;
+    return this;
+  }
+
+  // ===========================================================================
+  // SETTERS (Configuração Geral)
   // ===========================================================================
 
   EApiBuilder timestamp(DateTime dt) {
@@ -72,6 +97,7 @@ class EApiBuilder {
     return this;
   }
 
+  // Mantido para compatibilidade, mas agora temos method() e url() separados também
   EApiBuilder request({
     required String method,
     required String url,
@@ -147,16 +173,15 @@ class EApiBuilder {
   }
 
   // ===========================================================================
-  // HELPER METHODS (Simplificados usando StringUtils)
+  // HELPER METHODS
   // ===========================================================================
 
   static const String _ansiClean = '\x1B[0m\x1B[39m';
 
-  // Usando StringUtils em vez de reimplementar
   int _visualLen(String text) => StringUtils.visualLength(text);
 
   // ===========================================================================
-  // BUILDERS
+  // BUILDERS & PRINT
   // ===========================================================================
 
   String build() {
@@ -168,6 +193,11 @@ class EApiBuilder {
       case ApiStyle.boxed:
         return _buildBoxed();
     }
+  }
+
+  /// Imprime o log no console.
+  void print() {
+    stdout.write('${build()}\n');
   }
 
   // --- FILLED STYLE ---
@@ -196,16 +226,17 @@ class EApiBuilder {
     final reqTree = ETreeBuilder(_buildReqMap(), style: treeStyle).build();
     final resTree = ETreeBuilder(_buildResMap(), style: treeStyle).build();
 
-    int measureBlock(String block) =>
-        block.split('\n').fold(0, (maxW, line) => max(maxW, _visualLen(line)));
+    int measureBlock(String block) => block
+        .split('\n')
+        .fold(0, (maxW, line) => math.max(maxW, _visualLen(line)));
 
-    int contentMaxWidth = max(_visualLen(headerStr),
-        max(measureBlock(reqTree), measureBlock(resTree)));
+    int contentMaxWidth = math.max(_visualLen(headerStr),
+        math.max(measureBlock(reqTree), measureBlock(resTree)));
 
     int idealWidth = contentMaxWidth + (padding * 2) + shadowCharWidth;
     int terminalWidth = TerminalInfo.width ?? 100;
     int finalWidth = _fixedWidth ??
-        (_autoWidth ? min(idealWidth, terminalWidth) : idealWidth);
+        (_autoWidth ? math.min(idealWidth, terminalWidth) : idealWidth);
 
     final boxWidth = finalWidth - shadowCharWidth;
     final drawContentWidth = boxWidth - (padding * 2);
@@ -216,16 +247,12 @@ class EApiBuilder {
     }
 
     void drawFilledLine(String content, String currentBlockBg) {
-      // 1. Wrap do conteúdo para caber na largura disponível
       final wrappedLines = StringUtils.wrap(content, width: drawContentWidth);
 
       for (var line in wrappedLines) {
-        // Aplica o fundo ao conteúdo já com cores
         final patchedSafe = patchContentBg(line, currentBlockBg);
-
-        // Calcula espaço restante para preencher com cor de fundo
         final int contentLen = _visualLen(line);
-        final int rightSpace = max(0, drawContentWidth - contentLen);
+        final int rightSpace = math.max(0, drawContentWidth - contentLen);
         final pad = ' ' * padding;
 
         buffer.write(
@@ -235,7 +262,6 @@ class EApiBuilder {
 
     final bool hasTopPadding = padding > 0 && !_isTitleCompact;
 
-    // Header Background Block
     if (hasTopPadding) {
       buffer
           .write('$titleBlockBg${' ' * boxWidth}$_ansiClean$emptyShadowStr\n');
@@ -252,23 +278,18 @@ class EApiBuilder {
       buffer.write('$titleBlockBg${' ' * boxWidth}$_ansiClean$shadowStr\n');
     }
 
-    // Body
     if (!_isTitleCompact) {
       buffer.write('$contentBlockBg${' ' * boxWidth}$_ansiClean$shadowStr\n');
     }
 
-    // Title Request
     drawFilledLine('${XTermStyle.bold}Request:', contentBlockBg);
-    // Body Request
     for (var line in reqTree.split('\n')) {
       drawFilledLine(line, contentBlockBg);
     }
 
     buffer.write('$contentBlockBg${' ' * boxWidth}$_ansiClean$shadowStr\n');
 
-    // Title Response
     drawFilledLine('${XTermStyle.bold}Response:', contentBlockBg);
-    // Body Response
     for (var line in resTree.split('\n')) {
       drawFilledLine(line, contentBlockBg);
     }
@@ -315,28 +336,28 @@ class EApiBuilder {
     final reqTree = ETreeBuilder(_buildReqMap(), style: treeStyle).build();
     final resTree = ETreeBuilder(_buildResMap(), style: treeStyle).build();
 
-    int measureBlock(String block) =>
-        block.split('\n').fold(0, (maxW, line) => max(maxW, _visualLen(line)));
+    int measureBlock(String block) => block
+        .split('\n')
+        .fold(0, (maxW, line) => math.max(maxW, _visualLen(line)));
 
-    int contentMaxWidth = max(_visualLen(headerStr),
-        max(measureBlock(reqTree), measureBlock(resTree)));
+    int contentMaxWidth = math.max(_visualLen(headerStr),
+        math.max(measureBlock(reqTree), measureBlock(resTree)));
 
     int idealWidth = contentMaxWidth + (padding * 2) + 2 + shadowCharWidth;
     int terminalWidth = TerminalInfo.width ?? 100;
     int finalWidth = _fixedWidth ??
-        (_autoWidth ? min(idealWidth, terminalWidth) : idealWidth);
+        (_autoWidth ? math.min(idealWidth, terminalWidth) : idealWidth);
 
     final boxWidth = finalWidth - shadowCharWidth;
     final drawContentWidth = boxWidth - 2 - (padding * 2);
     final buffer = StringBuffer();
 
     void drawLine(String content) {
-      // Usa StringUtils.wrap para quebrar linhas longas corretamente
       final wrappedLines = StringUtils.wrap(content, width: drawContentWidth);
 
       for (var line in wrappedLines) {
         final spacesNeeded = drawContentWidth - _visualLen(line);
-        final padSize = max(0, spacesNeeded);
+        final padSize = math.max(0, spacesNeeded);
         final pad = ' ' * padding;
         buffer.write(
             '$borderColor${border.left}$_ansiClean$pad$line${' ' * padSize}$pad$borderColor${border.right}$_ansiClean${lineEnd()}');
@@ -405,16 +426,17 @@ class EApiBuilder {
     final reqTree = ETreeBuilder(_buildReqMap(), style: treeStyle).build();
     final resTree = ETreeBuilder(_buildResMap(), style: treeStyle).build();
 
-    int measureBlock(String block) =>
-        block.split('\n').fold(0, (maxW, line) => max(maxW, _visualLen(line)));
+    int measureBlock(String block) => block
+        .split('\n')
+        .fold(0, (maxW, line) => math.max(maxW, _visualLen(line)));
 
-    int contentMaxWidth = max(_visualLen(headerStr),
-        max(measureBlock(reqTree), measureBlock(resTree)));
+    int contentMaxWidth = math.max(_visualLen(headerStr),
+        math.max(measureBlock(reqTree), measureBlock(resTree)));
 
     int terminalWidth = TerminalInfo.width ?? 100;
     int idealWidth = contentMaxWidth;
     int finalWidth = _fixedWidth ??
-        (_autoWidth ? min(idealWidth, terminalWidth) : idealWidth);
+        (_autoWidth ? math.min(idealWidth, terminalWidth) : idealWidth);
 
     final divider =
         '${activeTheme.treeStructureColor}${'-' * finalWidth}$_ansiClean';
@@ -426,7 +448,6 @@ class EApiBuilder {
 
     buffer.writeln('${XTermStyle.bold}Request:$_ansiClean');
     for (var line in reqTree.split('\n')) {
-      // Wrap simples para evitar overflow
       for (var l in StringUtils.wrap(line, width: finalWidth)) {
         buffer.writeln(l);
       }

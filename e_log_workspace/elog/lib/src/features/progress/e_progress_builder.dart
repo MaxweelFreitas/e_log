@@ -4,6 +4,7 @@ import '../../base/x_term/x_term_color.dart';
 import '../../base/x_term/x_term_style.dart';
 import '../../core/terminal/terminal_width.dart';
 import '../../utils/color_utils.dart';
+import '../../utils/string_utils.dart';
 import 'style/progress_style.dart';
 
 class ProgressBuilder {
@@ -15,10 +16,13 @@ class ProgressBuilder {
   final Rgb? gradientStart;
   final Rgb? gradientEnd;
 
+  final bool showPercentage;
+
   List<String>? _gradientCache;
   int _barWidth = 0;
   int _current = 0;
   bool _started = false;
+  String? _lastMessage;
 
   ProgressBuilder({
     required this.output,
@@ -28,6 +32,7 @@ class ProgressBuilder {
     int? width,
     this.gradientStart,
     this.gradientEnd,
+    this.showPercentage = true,
   }) : _total = total {
     _calculateDimensions(width);
     _precomputeGradient();
@@ -35,58 +40,58 @@ class ProgressBuilder {
 
   void _calculateDimensions(int? userWidth) {
     try {
-      // 1. Calcula a largura visual de um "bloco" (unidade de progresso)
-      final charWidth =
-          math.max(style.filledChar.length, style.emptyChar.length);
-      final safeCharWidth = charWidth > 0 ? charWidth : 1;
+      final startLen = StringUtils.visualLength(style.startBorder);
+      final endLen = StringUtils.visualLength(style.endBorder);
+      final labelLen = StringUtils.visualLength(label);
+      final fillLen = math.max(1, StringUtils.visualLength(style.filledChar));
 
-      // 2. Calcula o "Overhead" (Espaço fixo ocupado por bordas e texto)
-      final overhead = style.startBorder.length + style.endBorder.length + 7;
+      final percentSpace = showPercentage ? 5 : 0;
 
-      // 3. Obtém a largura total disponível usando o Resolver
+      final overhead = labelLen + 1 + startLen + endLen + 1 + percentSpace;
+
       final totalWidth = TerminalWidthResolver.resolve(
         userWidth: userWidth,
-        contentWidth: 80, // Fallback padrão
+        contentWidth: 80,
         maxWidth: stdout.hasTerminal ? stdout.terminalColumns : null,
       );
 
-      // 4. Subtrai o overhead para saber quanto espaço sobra para a BARRA
-      final availableColumns = (totalWidth - overhead).clamp(10, 500);
+      // --- CORREÇÃO DO LAYOUT ---
+      // Subtraímos 1 para garantir que a linha não quebre automaticamente
+      final availableColumns = (totalWidth - overhead - 1).clamp(5, 500);
 
-      // 5. Define a largura em "passos"
-      _barWidth = availableColumns ~/ safeCharWidth;
-    } on Exception {
-      _barWidth = 40;
+      _barWidth = availableColumns ~/ fillLen;
+    } catch (e) {
+      _barWidth = 30;
     }
   }
 
-  /// Gera o cache de gradiente respeitando a prioridade:
-  /// 1. Manual (Passado no construtor)
-  /// 2. Estilo (Definido no Preset)
   void _precomputeGradient() {
-    // 1. Prioridade: Gradiente Manual
+    if (_barWidth <= 0) return;
+
     if (gradientStart != null && gradientEnd != null) {
       _gradientCache =
           ColorUtils.generateGradient(gradientStart!, gradientEnd!, _barWidth);
       return;
     }
 
-    // 2. Prioridade: Gradiente do Estilo (Preset)
-    // --- ADICIONADO ESTE BLOCO ---
     if (style.gradientStart != null && style.gradientEnd != null) {
       _gradientCache = ColorUtils.generateGradient(
           style.gradientStart!, style.gradientEnd!, _barWidth);
     }
   }
 
-  void update(int current) {
-    if (!_started) {
-      output('\x1b[2K\r${XTermStyle.bold}$label${XTermColor.reset}\n');
-      _started = true;
-    }
+  void update(int current, {String? message}) {
+    // Garante inicialização
+    if (!_started) _started = true;
 
     _current = current;
     if (_current > _total) _current = _total;
+    if (_current < 0) _current = 0;
+
+    if (message != null) {
+      _lastMessage = message;
+    }
+
     output(render());
   }
 
@@ -95,63 +100,73 @@ class ProgressBuilder {
   String render() {
     final pct = (_current / _total).clamp(0.0, 1.0);
     final percentInt = (pct * 100).toInt();
-    final percentStr = percentInt.toString().padLeft(3);
 
     final filledCount = (pct * _barWidth).round();
-    final emptyCount = _barWidth - filledCount;
+    final emptyCount = math.max(0, _barWidth - filledCount);
 
     final buffer = StringBuffer();
-    buffer.write('\x1b[2K\r'); // Limpa linha
 
-    // Borda Esquerda
+    // Limpa a linha e volta ao início
+    buffer.write('\x1b[2K\r');
+
+    // Label
+    buffer.write('${XTermStyle.bold}$label${XTermColor.reset} ');
+
+    // Borda Esq
     final borderColor = style.borderColor ?? XTermColor.brightBlack;
     buffer.write('$borderColor${style.startBorder}');
 
-    // Estilos de texto (Bold, Underline...)
     if (style.textStyle != null) buffer.write(style.textStyle);
     if (style.underlineColor != null) buffer.write(style.underlineColor);
 
-    // --- PARTE PREENCHIDA ---
-    if (_gradientCache != null) {
+    // Barra Preenchida
+    if (_gradientCache != null && _gradientCache!.isNotEmpty) {
       for (var i = 0; i < filledCount; i++) {
-        // Lógica do TIP (Ponta da barra) com cor do gradiente atual
+        final color = (i < _gradientCache!.length)
+            ? _gradientCache![i]
+            : _gradientCache!.last;
         if (style.tip != null &&
             i == filledCount - 1 &&
             filledCount < _barWidth) {
-          buffer.write('${_gradientCache![i]}${style.tip}');
+          buffer.write('$color${style.tip}');
         } else {
-          buffer.write('${_gradientCache![i]}${style.filledChar}');
+          buffer.write('$color${style.filledChar}');
         }
       }
     } else {
       final barColor = style.filledColor ?? XTermColor.green;
-      if (style.tip != null && filledCount > 0 && filledCount < _barWidth) {
-        // Desenha barra - 1 + ponta
-        buffer.write(
-            '$barColor${style.filledChar * (filledCount - 1)}${style.tip}');
-      } else {
-        buffer.write('$barColor${style.filledChar * filledCount}');
+      if (filledCount > 0) {
+        if (style.tip != null && filledCount < _barWidth) {
+          buffer.write(
+              '$barColor${style.filledChar * (filledCount - 1)}${style.tip}');
+        } else {
+          buffer.write('$barColor${style.filledChar * filledCount}');
+        }
       }
     }
 
-    // --- PARTE VAZIA ---
+    // Barra Vazia
     final emptyColor = style.emptyColor ?? XTermColor.brightBlack;
-
-    // Reseta cor da barra anterior para aplicar a cor do vazio corretamente
-    // (A menos que seja underline, que queremos manter para o "chão" do Pacman)
-    if (style.underlineColor == null) {
-      buffer.write(XTermColor.reset);
+    if (style.underlineColor == null) buffer.write(XTermColor.reset);
+    if (emptyCount > 0) {
+      buffer.write('$emptyColor${style.emptyChar * emptyCount}');
     }
 
-    buffer.write('$emptyColor${style.emptyChar * emptyCount}');
-
-    // Reseta tudo
     buffer.write(XTermColor.reset);
 
-    // Borda Direita + Porcentagem
-    buffer.write('$borderColor${style.endBorder} ');
-    buffer.write('${XTermColor.cyan}$percentStr%');
-    buffer.write(XTermColor.reset);
+    // Borda Dir
+    buffer.write('$borderColor${style.endBorder}');
+
+    // Porcentagem
+    if (showPercentage) {
+      final percentStr = percentInt.toString().padLeft(3);
+      buffer.write(' ${XTermColor.cyan}$percentStr%${XTermColor.reset}');
+    }
+
+    // Mensagem
+    if (_lastMessage != null && _lastMessage!.isNotEmpty) {
+      buffer.write(' $_lastMessage');
+    }
 
     return buffer.toString();
   }
@@ -159,8 +174,10 @@ class ProgressBuilder {
   String finish({String? message}) {
     _current = _total;
     final barLine = render();
+
     output(barLine);
-    output('\n');
+    output('\n'); // Quebra de linha apenas no final
+
     if (message != null) {
       output('${XTermColor.green}✔ $message${XTermColor.reset}\n');
     }

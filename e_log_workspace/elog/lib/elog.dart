@@ -16,11 +16,19 @@ import 'src/features/wizard/style/e_wizard_style.dart';
 
 // Retorno tipado
 import 'src/features/spinner/spinner.dart';
+import 'src/features/spinner/spinner_set.dart';
 import 'src/features/progress/e_progress_builder.dart';
+import 'src/features/progress/style/progress_style.dart';
 
 import 'src/base/x_term/x_term_color.dart';
+import 'src/utils/color_utils.dart';
 import 'src/utils/terminal_utils.dart';
 import 'src/features/box/e_box_builder.dart';
+
+// Imports de Log e Block
+import 'src/features/log/builder/e_log_builder.dart';
+import 'src/features/block/e_block_builder.dart';
+import 'src/features/chart/e_chart_builder.dart';
 
 // =============================================================================
 // EXPORTS PÚBLICOS
@@ -86,25 +94,27 @@ export 'src/features/table/model/e_cell_text_align.dart';
 export 'src/features/table/model/e_cell.dart';
 
 // 8. Block
-import 'src/features/block/e_block_builder.dart';
 export 'src/features/block/e_block_builder.dart';
 export 'src/features/block/style/block_presets.dart';
 export 'src/features/block/style/block_style.dart';
 
 // 9. Chart
-import 'src/features/chart/e_chart_builder.dart';
 export 'src/features/chart/e_chart_builder.dart';
 export 'src/features/chart/style/chart_presets.dart';
 export 'src/features/chart/style/chart_style.dart';
 
 // 10. Log
-import 'src/features/log/builder/e_log_builder.dart';
 export 'src/features/log/style/e_log_style.dart';
 export 'src/features/log/style/e_log_presets.dart';
 
 /// Fachada Principal
 class Elog {
   Elog._();
+
+  // --- SINGLETON INTERACTIVE ---
+  // Usa stdout.write para suportar animações na mesma linha (\r)
+  static final EInteractive _interactive =
+      EInteractive(emit: (s) => stdout.write(s));
 
   // --- SEGURANÇA ---
   static void run(Future<void> Function() app) {
@@ -129,8 +139,7 @@ class Elog {
     });
   }
 
-  // --- LOGS RÁPIDOS (Agora usam .print() para usar o Output System) ---
-
+  // --- LOGS RÁPIDOS ---
   static void info(String message) {
     ELogBuilder().level(ELogLevel.info).message(message).print();
   }
@@ -149,27 +158,21 @@ class Elog {
     builder.print();
   }
 
-  // --- BUILDERS DE LOG ---
-
-  /// Inicia um construtor de LOG (com timestamp, level, etc).
+  // --- BUILDERS ---
   static ELogBuilder get log => ELogBuilder();
 
-  /// Cria um LOG formatado dentro de uma caixa.
-  /// (Diferente de `panel`, este inclui metadados de log).
   static ELogBuilder box({String? title, String? message}) {
-    // AJUSTE AQUI: layout() em vez de style()
     final builder = ELogBuilder().layout(ELogLayout.boxed);
     if (title != null) builder.title(title);
     if (message != null) builder.message(message);
     return builder;
   }
 
-  // --- UI COMPONENTS ---
-
-  /// Inicia um construtor de CAIXA/PAINEL (Visual puro).
+  // --- COMPONENTES ---
   static EBoxBuilder get panel => EBoxBuilder();
-
   static EApiBuilder get api => EApiBuilder();
+  static EChartBuilder get chart => EChartBuilder();
+  static EBlockBuilder get block => EBlockBuilder();
 
   static ETreeBuilder tree(Map<String, dynamic> data, {TreeStyle? style}) {
     return ETreeBuilder(data, style: style);
@@ -189,21 +192,35 @@ class Elog {
   }
 
   // --- INTERACTIVE ---
-  static EInteractive get interactive =>
-      EInteractive(emit: (s) => stdout.write(s));
 
-  static Spinner spinner({String text = 'Loading...'}) {
-    return interactive.spinner(text: text);
+  static EInteractive get interactive => _interactive;
+
+  static Spinner spinner({
+    String text = 'Loading...',
+    SpinnerSet? spinner,
+  }) {
+    return _interactive.spinner(text: text, spinner: spinner);
   }
 
-  static ProgressBuilder progress(
-      {int total = 100, String label = 'Progress'}) {
-    return interactive.progress(label: label, total: total);
+  static ProgressBuilder progress({
+    int total = 100,
+    String label = 'Progress',
+    ProgressStyle style = ProgressStyle.block,
+    int? width,
+    Rgb? startColor,
+    Rgb? endColor,
+    bool showPercentage = true,
+  }) {
+    return _interactive.progress(
+      label: label,
+      total: total,
+      style: style,
+      width: width,
+      startColor: startColor,
+      endColor: endColor,
+      showPercentage: showPercentage,
+    );
   }
-
-  static EBlockBuilder get block => EBlockBuilder();
-
-  static EChartBuilder get chart => EChartBuilder();
 }
 
 class _ElogCrash {
@@ -211,13 +228,7 @@ class _ElogCrash {
   _ElogCrash(this.originalError);
 }
 
-// --- EXTENSIONS VISUAIS (Apenas para componentes visuais puros) ---
-// Nota: ELogBuilder já tem .print() nativo agora, então removemos a extension dele.
-
-extension EApiBuilderPrintExt on EApiBuilder {
-  void print() => stdout.writeln(build());
-}
-
+// --- EXTENSIONS VISUAIS ---
 extension ETreeBuilderPrintExt on ETreeBuilder {
   void print() => stdout.writeln(build());
 }
